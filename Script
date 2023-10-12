@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name         AutoMint
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  try to take over the world!
 // @author       You
 // @match        https://*/*
+// @match        http://localhost/*
+// @match        http://127.0.0.1/*
 // @icon         https://www.google.com/s2/favicons?domain=169pixel.app
 // @grant        none
 // @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap');
@@ -13,46 +15,83 @@
 
 (function () {
 
-    const HOW_MANY_BUY = 1;
+    let intervalID = null;
 
-    $("html").append("<div id='mint-btn'>Start Minting</div>");
-    $("#mint-btn").css({"cursor": "pointer", "position": "absolute", "top": "200px", "left": "20px", "z-index": "20", "border": "solid", "background": "#FAFAFA", "color": "#7EE4AA", "border-color": "#7EE4AA", "font-size": "20px",
-                       "box-shadow": "0px 1px 6px rgba(0, 0, 0, 0.4)", "padding":"12px", "font-weight": "600", "font-family": "'Noto Sans', sans-serif"})
-    $("#mint-btn").on("click", startMinting )
-    let count = 0
-    function test(work) {
-        console.log("working")
-        if ($("button:contains('M')").text().toLowerCase().includes("mint")) {
-            if (count < HOW_MANY_BUY) {
-                try {
-                    $("button").click()
-                } catch {
-                    console.log("cann't click")
-                    count -= 1;
-                }
-                count += 1;
-                console.log("buy count is: " + count)
+    // get page html
+    const targetElement = document.querySelector("html");
 
-            } else {
-                console.log("over limit amount")
-                clearInterval(work);
-                $("#mint-btn").css({"cursor": "pointer", "position": "absolute", "top": "200px", "left": "20px", "z-index": "20", "border": "solid", "background": "#FAFAFA", "color": "#53D9DE", "border-color": "#53D9DE", "font-size": "20px",
-                       "box-shadow": "0px 1px 6px rgba(83, 217, 217, 0.3)", "padding":"12px", "scale": "1", "font-weight": "600", "font-family": "'Noto Sans', sans-serif"}).text("Minting Done")
-                $("#mint-btn").unbind();
-            }
+    let stopButton = document.createElement("button");
+    stopButton.style.width = "7em";
+    stopButton.style.zIndex = "999";
+    stopButton.style.display = "block";
+    stopButton.style.backgroundColor = "#b34642";
+    stopButton.style.color = "white";
+    stopButton.style.padding = "0.5rem";
+    stopButton.style.border = "none";
+    stopButton.style.cursor = "pointer";
+    stopButton.style.position = "absolute";
+    stopButton.style.left = "9em";
+    stopButton.style.top = "1em";
+    stopButton.innerHTML = "Stop minting";
 
-        } else {
-            console.log("Could not find btn")
-            $("#mint-btn").css({"cursor": "pointer", "position": "absolute", "top": "200px", "left": "20px", "z-index": "20", "border": "solid", "background": "#FAFAFA", "color": "#E9275B", "border-color": "#E9275B", "font-size": "20px",
-                       "box-shadow": "0px 1px 7px rgba(233, 40, 90, 0.4)", "padding":"12px", "scale": "1", "font-weight": "600", "font-family": "'Noto Sans', sans-serif"}).text("Error Any BTN")
-                $("#mint-btn").unbind();
+    let startButton = document.createElement("button");
+    startButton.style.width = "7em";
+    startButton.style.display = "block";
+    startButton.style.backgroundColor = "#4f9141";
+    startButton.style.color = "white";
+    startButton.style.padding = "0.5rem";
+    startButton.style.border = "none";
+    startButton.style.cursor = "pointer";
+    startButton.style.position = "absolute";
+    startButton.style.left = "1em";
+    startButton.style.top = "1em";
+    startButton.innerHTML = "Start minting";
+
+
+    // Add a click event handler to the button
+    startButton.addEventListener("click", function () {
+        if (intervalID === null) {
+            intervalID = setInterval(parsWebsite, 1000); // Execute every 1000 milliseconds (1 second)
         }
-    }
-    function startMinting() {
-        $("#mint-btn").css({"color": "#657665", "border-color": "#657665", "scale": "0.9", "box-shadow": "0px 1px 6px rgba(199, 199, 199, 0.3)", "font-weight": "600", "font-family": "'Noto Sans', sans-serif"})
-        let work = setInterval(function () {
-            test(work);
-        }, 240);
+        console.log("Start minting");
+    });
+    stopButton.addEventListener("click", function () {
+        if (intervalID !== null) {
+            clearInterval(intervalID);
+            intervalID = null;
+        }
+        console.log("Stop minting");
+    });
+
+    if (targetElement) {
+        // Append the button to the selected element
+        targetElement.appendChild(startButton);
+        targetElement.appendChild(stopButton);
+    } else {
+        console.log("Element not found");
     }
 
+
+    function parsWebsite(){
+        const buttons = document.querySelectorAll("button");
+        const divs = document.querySelectorAll("div");
+
+        // Loop through each button
+        buttons.forEach(function(button, index) {
+            if(button.textContent.toLowerCase() && button.textContent.toLowerCase().includes('mint')){
+                console.log("Button " + (index + 1) + " text: " + button.textContent);
+                try{
+                    button.click()
+                }catch(e){
+                    console.log(e);
+                }  
+            }
+        });
+        // Loop through each divs
+        // divs.forEach(function(div, index) {
+        //     if(div.textContent.toLowerCase() && div.textContent.toLowerCase().includes('connect')){
+        //         console.log("Div " + (index + 1) + " text: " + div.textContent);
+        //     }
+        // });
+    }
 })();
