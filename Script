@@ -29,10 +29,10 @@
     stopButton.style.padding = "0.5rem";
     stopButton.style.border = "none";
     stopButton.style.cursor = "pointer";
-    stopButton.style.position = "absolute";
+    stopButton.style.position = "fixed";
     stopButton.style.left = "9em";
     stopButton.style.top = "1em";
-    stopButton.innerHTML = "Stop minting";
+    stopButton.innerHTML = "Stop buy";
 
     let startButton = document.createElement("button");
     startButton.style.width = "7em";
@@ -42,10 +42,11 @@
     startButton.style.padding = "0.5rem";
     startButton.style.border = "none";
     startButton.style.cursor = "pointer";
-    startButton.style.position = "absolute";
+    startButton.style.position = "fixed";
+    startButton.style.zIndex = "999";
     startButton.style.left = "1em";
     startButton.style.top = "1em";
-    startButton.innerHTML = "Start minting";
+    startButton.innerHTML = "Start buy";
 
 
     // Add a click event handler to the button
